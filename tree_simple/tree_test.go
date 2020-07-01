@@ -14,13 +14,10 @@ type SystemMenu struct {
 	Name     string `json:"name"`      //菜单名
 	Route    string `json:"route"`     //页面路径
 	Icon     string `json:"icon"`      //图标路径
+	Children INodes `json:"children"` //子菜单
 }
 
 // region 实现ITree 所有接口
-func (s SystemMenu) GetTitle() string {
-	return s.Name
-}
-
 func (s SystemMenu) GetId() int64 {
 	return s.Id
 }
@@ -29,18 +26,18 @@ func (s SystemMenu) GetParentId() int64 {
 	return s.ParentId
 }
 
-func (s SystemMenu) GetData() interface{} {
-	return s
-}
-
 func (s SystemMenu) IsRoot() bool {
 	// 这里通过ParentId等于0 或者 ParentId等于自身Id表示顶层根节点
 	return s.ParentId == 0 || s.ParentId == s.Id
 }
 
+func (s *SystemMenu) SetChildren(nodes INodes) {
+	s.Children = append(s.Children, nodes...)
+}
+
 // endregion
 
-type SystemMenus []SystemMenu
+type SystemMenus []*SystemMenu
 
 // ConvertToINodeArray 将当前数组转换成父类 INode 接口 数组
 func (s SystemMenus) ConvertToINodeArray() (nodes []INode) {
@@ -53,7 +50,7 @@ func (s SystemMenus) ConvertToINodeArray() (nodes []INode) {
 func TestGenerateTree(t *testing.T) {
 	// 模拟获取数据库中所有菜单，在其它所有的查询中，也是首先将数据库中所有数据查询出来放到数组中，
 	// 后面的遍历递归，都在这个 allMenu中进行，而不是在数据库中进行递归查询，减小数据库压力。
-	allMenu := []SystemMenu{
+	allMenu := []*SystemMenu{
 		{Id: 1, ParentId: 0, Name: "系统总览", Route: "/systemOverview", Icon: "icon-system"},
 		{Id: 2, ParentId: 0, Name: "系统配置", Route: "/systemConfig", Icon: "icon-config"},
 
@@ -66,15 +63,13 @@ func TestGenerateTree(t *testing.T) {
 	}
 
 	// 生成完全树
-	resp := GenerateTree(SystemMenus.ConvertToINodeArray(allMenu), nil)
+	resp := GenerateTree(SystemMenus.ConvertToINodeArray(allMenu))
 	bytes, _ := json.MarshalIndent(resp, "", "\t")
 	fmt.Println(string(pretty.Color(pretty.PrettyOptions(bytes, pretty.DefaultOptions), nil)))
 
-	// 模拟从数据库中查询出 '设备'
-	device := []SystemMenu{allMenu[5]}
-	// 查询 设备 的所有父节点
-	respNodes := FindRelationNode(SystemMenus.ConvertToINodeArray(device), SystemMenus.ConvertToINodeArray(allMenu))
-	resp = GenerateTree(respNodes, nil)
-	bytes, _ = json.Marshal(resp)
-	//fmt.Println(string(pretty.Color(pretty.PrettyOptions(bytes, pretty.DefaultOptions), nil)))
+	//root := &SystemMenu{Id: 1, ParentId: 0, Name: "系统总览", Route: "/systemOverview", Icon: "icon-system"}
+	//RecursiveTree(root, SystemMenus.ConvertToINodeArray(allMenu))
+	//jsonTree, _ := json.MarshalIndent(root, "", "\t")
+	//fmt.Println(string(pretty.Color(pretty.PrettyOptions(jsonTree, pretty.DefaultOptions), nil)))
+
 }
