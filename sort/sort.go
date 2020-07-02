@@ -2,6 +2,9 @@ package sort
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
+
 	// "os"
 	// "os/signal"
 )
@@ -42,6 +45,11 @@ const (
 //	// <-c
 //	// fmt.Println("Receive ctrl-c")
 //}
+
+var randSeed *rand.Rand
+func  init ()  {
+	randSeed = rand.New(rand.NewSource(time.Now().UnixNano()))
+}
 
 // 冒泡排序
 func maopao(buf []int) {
@@ -138,35 +146,35 @@ func xier(buf []int) {
 
 // 快速排序
 func kuaisu(buf []int) {
-	kuai(buf, 0, len(buf)-1)
+	quickSort(buf, 0, len(buf)-1)
 }
 
-func kuai(a []int, l, r int) {
-	if l >= r {
-		return
+// 2分法的最终版
+func quickSort(a []int, l, r int) {
+	if l < r {
+		q := randomPartition(a, l, r)
+		quickSort(a, q+1, r)
+		quickSort(a, l, q-1)
 	}
-	i, j, key := l, r, a[l] //选择第一个数为key
-	for i < j {
-		for i < j && a[j] > key { //从右向左找第一个小于key的值
-			j--
-		}
-		if i < j {
-			a[i] = a[j]
-			i++
-		}
+}
 
-		for i < j && a[i] < key { //从左向右找第一个大于key的值
+func randomPartition(a []int, l, r int) int {
+	i := randSeed.Intn(r - l + 1) + l
+	a[i], a[r] = a[r], a[i]
+	return partition(a, l, r)
+}
+
+func partition(a []int, l, r int) int {
+	key := a[r] // 选中放在数据的最后面的 标志元素
+	i := l - 1
+	for j:=l;j<r;j++ {
+		if a[j] <= key { // 这里必须是<=
 			i++
-		}
-		if i < j {
-			a[j] = a[i]
-			j--
+			a[i], a[j] = a[j], a[i]
 		}
 	}
-	//i == j
-	a[i] = key
-	kuai(a, l, i-1)
-	kuai(a, i+1, r)
+	a[i+1], a[r] = a[r], a[i+1]
+	return i+1
 }
 
 //归并排序

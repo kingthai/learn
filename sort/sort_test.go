@@ -13,8 +13,11 @@ func TestMaopao(t *testing.T) {
 	for i := 0; i < num; i++ {
 		buf = append(buf, randSeed.Intn(rangeNum))
 	}
+	fmt.Println("源数组: ", buf)
 	start := time.Now()
-	maopao(buf)
-	fmt.Println(time.Since(start), buf)
+	//maopao(buf)
+	kuaisu(buf)
+	fmt.Println(time.Since(start))
+	fmt.Println("结果数组:" , buf)
 
 }
