@@ -62,4 +62,5 @@
 
 ![text](http://static.oschina.net/uploads/space/2014/0907/195303_uA8E_269836.jpg)
 
-
+验算实例
+![text](http://static.oschina.net/uploads/space/2014/0907/195317_p1Kh_269836.jpg)
