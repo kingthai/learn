@@ -51,16 +51,18 @@
 
 ## 快速排序最终版
 先说明这个快速排序法的概念，它以最右边的值s作比较的标准，将整个数列分为三个部份，一个是小于s的部份，一个是大于s的部份，一个是未处理的部份，如下所示 ： 
+<br>
 ![text](http://static.oschina.net/uploads/space/2014/0907/195232_fO6x_269836.jpg)
 
 在排序的过程中，i 与 j 都会不断的往右进行比较与交换，最后数列会变为以下的状态：
-
+<br>
 ![text](http://static.oschina.net/uploads/space/2014/0907/195249_wrJb_269836.jpg)
 
 
 然后将s的值置于中间，接下来就以相同的步骤会左右两边的数列进行排序的动作，如下所示： 
-
+<br>
 ![text](http://static.oschina.net/uploads/space/2014/0907/195303_uA8E_269836.jpg)
 
-验算实例
+验算实例,这个思路和把数组非0元素 排列到前面一样，快慢指针原理
+<br>
 ![text](http://static.oschina.net/uploads/space/2014/0907/195317_p1Kh_269836.jpg)

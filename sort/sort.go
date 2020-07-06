@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	num      = 10
+	num      = 3
 	rangeNum = 10
 )
 
@@ -178,19 +178,45 @@ func partition(a []int, l, r int) int {
 }
 
 //归并排序
-func guibing(buf []int) {
-	tmp := make([]int, len(buf))
-	merge_sort(buf, 0, len(buf)-1, tmp)
+func guibing(buf []int) []int {
+	// 数组长度<2 直接返回
+	if len(buf) < 2 {
+		return buf
+	}
+	mid := len(buf)/2
+	left := guibing(buf[:mid])
+	right := guibing(buf[mid:])
+	res := mergeArr(left, right)
+	return res
 }
 
-func merge_sort(a []int, first, last int, tmp []int) {
-	if first < last {
-		middle := (first + last) / 2
-		merge_sort(a, first, middle, tmp)       //左半部分排好序
-		merge_sort(a, middle+1, last, tmp)      //右半部分排好序
-		mergeArray(a, first, middle, last, tmp) //合并左右部分
+// 合并数组
+func mergeArr(left, right []int) []int {
+	res := make([]int, 0)
+	i,j := 0, 0
+	for i<len(left) && j < len(right) {
+		if left[i] < right[j] {
+			res = append(res, left[i])
+			i++
+			continue
+		}
+		res = append(res, right[j])
+		j++
 	}
+
+	res = append(res, left[i:]...)
+	res = append(res, right[j:]...)
+	return res
 }
+
+//func merge_sort(a []int) {
+//	if first < last {
+//		middle := (first + last) / 2
+//		merge_sort(a)       //左半部分排好序
+//		merge_sort(a, middle+1, last)      //右半部分排好序
+//		mergeArray(a, first, middle, last) //合并左右部分
+//	}
+//}
 
 func mergeArray(a []int, first, middle, end int, tmp []int) {
 	// fmt.Printf("mergeArray a: %v, first: %v, middle: %v, end: %v, tmp: %v\n",
@@ -226,36 +252,60 @@ func mergeArray(a []int, first, middle, end int, tmp []int) {
 
 // 堆排序
 func duipai(buf []int) {
-	temp, n := 0, len(buf)
+	n := len(buf)
 
 	for i := (n - 1) / 2; i >= 0; i-- {
-		MinHeapFixdown(buf, i, n)
+		minHeap(buf, i, n-1)
 	}
 
 	for i := n - 1; i > 0; i-- {
-		temp = buf[0]
-		buf[0] = buf[i]
-		buf[i] = temp
-		MinHeapFixdown(buf, 0, i)
+		// 每次都把顶点 和 最后一个点 置换
+		buf[0], buf[i] = buf[i], buf[0]
+		minHeap(buf, 0, i)
 	}
 }
 
+// 小顶堆， 每次置换最小的 放到数组最后
 func MinHeapFixdown(a []int, i, n int) {
-	j, temp := 2*i+1, 0
+	j := 2*i+1
+	//判断是否存在child节点
 	for j < n {
+		//判断右child是否存在，如果存在则和另外一个同级节点进行比较
 		if j+1 < n && a[j+1] < a[j] {
 			j++
 		}
-
+		//没上浮到顶就构造好堆了
 		if a[i] <= a[j] {
 			break
 		}
 
-		temp = a[i]
-		a[i] = a[j]
-		a[j] = temp
+		a[i], a[j] = a[j], a[i]
 
 		i = j
-		j = 2*i + 1
+		j = 2*j + 1
+	}
+}
+
+func minHeap(a []int, i, n int) {
+	for {
+		child := 2*i + 1
+
+		// 没有叶子节点
+		if child > n {
+			break
+		}
+
+		// 叶子节点之间比较
+		if child < n && a[child] < a[child+1] {
+			child++
+		}
+
+		// 小顶堆
+		if a[i] < a[child] {
+				break
+		}
+
+		a[i], a[child] = a[child], a[i]
+		i = child
 	}
 }
