@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	num      = 3
+	num      = 10
 	rangeNum = 10
 )
 
@@ -254,14 +254,14 @@ func mergeArray(a []int, first, middle, end int, tmp []int) {
 func duipai(buf []int) {
 	n := len(buf)
 
-	for i := (n - 1) / 2; i >= 0; i-- {
-		minHeap(buf, i, n-1)
+	for i := n/2 - 1; i >= 0; i-- {
+		minHeap(buf, i, n)
 	}
 
-	for i := n - 1; i > 0; i-- {
+	for i := n-1; i > 0; i-- {
 		// 每次都把顶点 和 最后一个点 置换
 		buf[0], buf[i] = buf[i], buf[0]
-		minHeap(buf, 0, i)
+		minHeap(buf, 0, i) // i之后的 都是排序完成的
 	}
 }
 
@@ -289,23 +289,26 @@ func MinHeapFixdown(a []int, i, n int) {
 func minHeap(a []int, i, n int) {
 	for {
 		child := 2*i + 1
+		//fmt.Println(child)
 
 		// 没有叶子节点
-		if child > n {
+		if child >= n || child < 0 { // after int overflow
 			break
 		}
 
 		// 叶子节点之间比较
-		if child < n && a[child] < a[child+1] {
+		if child + 1 < n && a[child+1] < a[child] {
 			child++
 		}
 
 		// 小顶堆
 		if a[i] < a[child] {
-				break
+			break
 		}
 
 		a[i], a[child] = a[child], a[i]
 		i = child
+
 	}
 }
+
