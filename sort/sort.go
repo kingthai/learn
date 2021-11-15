@@ -1,6 +1,7 @@
 package sort
 
 import (
+	"container/heap"
 	"fmt"
 	"math/rand"
 	"time"
@@ -312,3 +313,131 @@ func minHeap(a []int, i, n int) {
 	}
 }
 
+// 回文数
+func isPalindrome(x int) bool {
+	tmp := x
+	res := 0
+	for tmp != 0 {
+		res = res*10 + tmp%10
+		tmp /= 10
+	}
+	if res != x {
+		return false
+	}
+	return true
+}
+
+func topKFrequent(nums []int, k int) []int {
+	hash := make(map[int]int)
+	for i := range nums {
+		hash[nums[i]]++
+	}
+	nodes := make([]node, 0)
+	for i, v := range hash {
+		node := node{
+			key: i,
+			times: v,
+		}
+		nodes = append(nodes, node)
+	}
+
+	// build heap
+	for i:=len(nodes)/2-1;i>=0;i--{
+		down(nodes, i, len(nodes))
+	}
+
+	// for i:=0;i<len(nodes);i++ {
+	//     fmt.Println(nodes[i])
+	// }
+
+	for i:=len(nodes)-1;i>0;i-- {
+		nodes[0],nodes[i]=nodes[i],nodes[0]
+		down(nodes, 0, i) // i之后的都是排序完成的
+	}
+
+	fmt.Println(nodes)
+
+	res := make([]int, len(nodes))
+	for i:=0;i<k;i++ {
+		res[i] = nodes[i].key
+	}
+	// fmt.Println(res)
+	return res[:k]
+}
+
+func down(a []node, i, n int) {
+	for {
+		child := 2*i + 1
+		//fmt.Println(child)
+
+		// 没有叶子节点
+		if child >= n || child < 0 { // after int overflow
+			break
+		}
+
+		// 叶子节点之间比较
+		if child + 1 < n && a[child+1].times < a[child].times {
+			child++
+		}
+
+		// 小顶堆
+		if a[i].times < a[child].times {
+			break
+		}
+
+		a[i], a[child] = a[child], a[i]
+		i = child
+	}
+}
+
+func topKFrequentNew(nums []int, k int) []int {
+	hash := make(map[int]int)
+	for i:= range nums {
+		hash[nums[i]]++
+	}
+
+	l := make(nodes, 0)
+	for i, v := range hash {
+		heap.Push(&l, &node{key:i, times:v})
+	}
+
+	res := make([]int, 0)
+	for i:=0;i<k;i++ {
+		tmp := heap.Pop(&l)
+		res = append(res, tmp.(*node).key)
+	}
+	return res
+
+}
+
+type node struct {
+	key int
+	times int
+}
+type nodes []*node
+
+func (n nodes) Less(i, j int) bool {
+	if n[i].times > n[j].times {
+		return true
+	}
+	return false
+}
+func (n nodes) Swap(i, j int) {
+	n[i], n[j] = n[j], n[i]
+}
+
+func (n nodes) Len() int {
+	return len(n)
+}
+
+func (n *nodes) Push(x interface{})  {
+	*n = append(*n, x.(*node))
+}
+
+func (n *nodes) Pop() interface{} {
+	old := *n
+	length := len(old)
+	x := old[length-1]
+	(*n) = old[:length-1]
+	return x
+}

@@ -16,6 +16,8 @@ limitations under the License.
 
 package sliceutil
 
+import "reflect"
+
 func RemoveString(slice []string, remove func(item string) bool) []string {
 	for i := 0; i < len(slice); i++ {
 		if remove(slice[i]) {
@@ -33,4 +35,12 @@ func HasString(slice []string, str string) bool {
 		}
 	}
 	return false
+}
+
+func ReverseAny(s interface{}) {
+	n := reflect.ValueOf(s).Len()
+	swap := reflect.Swapper(s)
+	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
+		swap(i, j)
+	}
 }

@@ -18,7 +18,9 @@ func TestMaopao(t *testing.T) {
 	//maopao(buf)
 	//kuaisu(buf)
 	//a := guibing(buf)
-	duipai(buf)
+	//duipai(buf)
+	buf = []int{1,1,1,2,2,3}
+	topKFrequent(buf, 2)
 	fmt.Println(time.Since(start))
 	fmt.Println("结果数组:" , buf)
 
